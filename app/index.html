@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Space - Home</title>
+        <link rel="stylesheet" type="text/css" href="css/base.css">
+        <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        eel.expose(go_to)
+        function go_to(url) {window.location.replace(url);};
+        async function getalbum() {
+            let ret = await eel.get_album(0,30,"random")();
+            let albumContainer = document.getElementById('album_top15');
+            ret.forEach(album => {
+                let albumDiv = document.createElement('div');
+                albumDiv.className = 'albums';
+                albumDiv.onclick = function() {go_to('album.html?id='+album.id);};
+                
+                let img = document.createElement('img');
+                eel.get_song_art(album.id)().then(src => {
+                    img.src = src;
+                });
+                img.alt = 'album';
+                
+                let albumName = document.createElement('p');
+                albumName.className = 'album_name';
+                albumName.textContent = album.name;
+                
+                let albumArtist = document.createElement('p');
+                albumArtist.className = 'album_artist';
+                albumArtist.textContent = album.artist;
+                
+                albumDiv.appendChild(img);
+                albumDiv.appendChild(albumName);
+                albumDiv.appendChild(albumArtist);
+                
+                albumContainer.appendChild(albumDiv);
+            });
+        }
+        getalbum();
+    </script>
+    </head>
+    <body>
+        <div id="home">
+            <div id="home-content">
+                <h1>Welcome to Space</h1>
+                <div id="album_top15">
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

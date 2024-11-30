@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <title>Space - Loading</title>
+        <link rel="stylesheet" type="text/css" href="css/base.css">
+        <link rel="stylesheet" type="text/css" href="css/album.css">
+        <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        eel.expose(go_to)
+        function go_to(url) {window.location.replace(url);};
+        async function get_album_info() {
+            let urlParams = new URLSearchParams(window.location.search);
+            let albumId = urlParams.get('id');
+            let album = await eel.get_album_info(albumId)()
+            let artist = document.getElementById('album-artist');
+            let name = document.getElementById('album-name');
+            let art = document.getElementById('album-art');
+            artist.textContent = album[0].artist;
+            name.textContent = album[0].name;
+            eel.get_song_art(album[0].id)().then(src => {
+                art.src = src;
+            });
+            document.title = album[0].name + " - " + album[0].artist;
+        }
+        async function get_album_songs(){
+            let urlParams = new URLSearchParams(window.location.search);
+            let albumId = urlParams.get('id');
+            let songs = await eel.get_album_songs(albumId)();
+            console.log(songs);
+            let table = document.querySelector('table');
+            songs.forEach(song => {
+                let row = table.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                cell1.textContent = song.discNumber;
+                cell2.textContent = song.orderTitle;
+                cell3.textContent = song.orderArtistName;
+                let minutes = Math.floor(song.duration / 60);
+                let seconds = song.duration % 60;
+                cell4.textContent = `${minutes}:${Math.floor(seconds).toString().padStart(2, '0')}`;
+            });
+        }
+        function back(){
+            window.history.back();
+        }
+        get_album_info();
+        get_album_songs();
+        async function play() {
+            let urlParams = new URLSearchParams(window.location.search);
+            let albumId = urlParams.get('id');
+            let songs = await eel.get_album_songs(albumId)();
+            let songIds = songs.map(song => song.id);
+            console.log(songIds);
+            eel.play_songs(songIds)();
+        }
+        async function add_que() {
+            let urlParams = new URLSearchParams(window.location.search);
+            let albumId = urlParams.get('id');
+            let songs = await eel.get_album_songs(albumId)();
+            let songIds = songs.map(song => song.id);
+            eel.add_que(songIds)();
+        }
+        async function shuffle_play() {
+            let urlParams = new URLSearchParams(window.location.search);
+            let albumId = urlParams.get('id');
+            let songs = await eel.get_album_songs(albumId)();
+            let songIds = songs.map(song => song.id);
+            eel.shuffle_play(songIds)();
+        }
+    </script>
+    </head>
+    <body>
+        <div id="home">
+            <div id="home-content">
+                <div id="album">
+                    <div id="album-info">
+                        <img id="album-art" src="" alt="album">
+                        <p id="album-name">Album Name</p>
+                        <p id="album-artist">Album Artist</p>
+                    </div>
+                    <hr>
+                    <button onclick="play()">▶ Play</button>
+                    <button onclick="add_que()">+ Add Queue</button>
+                    <button onclick="shuffle_play()">⇆ Shuffle</button>
+                    <div id="album-songs">
+                        <table>
+                            <tr>
+                                <th>#</th>
+                                <th>Song</th>
+                                <th>Artist</th>
+                                <th>Duration</th>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

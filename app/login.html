@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Space - Login</title>
+        <link rel="stylesheet" type="text/css" href="css/base.css">
+        <link rel="stylesheet" type="text/css" href="css/login.css">
+        <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        eel.expose(go_to)
+        function go_to(url) {window.location.replace(url);};
+        eel.expose(login)
+        async function login() {
+            var server = document.getElementById("server").value;
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            let ret = await eel.navidrome_login(server, username, password)();
+            if (ret == "0") {
+                go_to("index.html");
+            } else {
+                document.getElementById("alert").innerHTML = ret;
+                document.getElementById("alert").style.display = "block";
+            }
+        }
+    </script>
+    </head>
+    <body>
+        <div id="login">
+            <div id="login-content">
+                <form onsubmit="return false;">
+                    <input type="text" id="server" placeholder="Server"><br>
+                    <input type="text" id="username" placeholder="Username"><br>
+                    <input type="password" id="password" placeholder="Password"><br>
+                    <button onclick="login()">Submit</button>
+                </form>
+                <div id="alert" style="display: none;">
+                </div>
+            </div>
+        </div>
+</html>
